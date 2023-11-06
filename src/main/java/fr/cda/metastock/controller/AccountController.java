@@ -44,7 +44,6 @@ public class AccountController {
     }
 
     @GET
-
     @Produces(MediaType.APPLICATION_JSON)
     public Response index() {
 
@@ -97,4 +96,24 @@ public class AccountController {
         }
     }
 
+    @GET
+    @Path("/{id}/archive")
+    public Response archive(@PathParam("id") Long id) {
+        TypedQuery<Account> query = this.em.createQuery("SELECT a FROM Account AS a WHERE a.id = :id", Account.class);
+        query.setParameter("id", id);
+
+        Account account = null;
+
+        try {
+            account = query.getSingleResult();
+        } catch (Exception ignored) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        account.setArchive(true);
+        this.em.persist(account);
+
+        return Response.noContent().build();
+    }
+    
 }

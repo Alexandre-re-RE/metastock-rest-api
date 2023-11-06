@@ -6,7 +6,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorValue("W")
+@DiscriminatorValue("O")
 public class Exit extends Movement {
 }

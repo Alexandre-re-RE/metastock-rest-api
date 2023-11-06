@@ -4,6 +4,6 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("L")
+@DiscriminatorValue("I")
 public class Entry extends Movement {
 }

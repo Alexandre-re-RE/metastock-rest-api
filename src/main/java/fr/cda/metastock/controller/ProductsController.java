@@ -29,8 +29,8 @@ import jakarta.ws.rs.core.Response;
 public class ProductsController {
 
 	
-	@PersistenceContext(unitName = "jakartaee-hello-world-persistence-unit")
-	private EntityManager em;
+	@PersistenceContext
+    private EntityManager em;
 	
 	
 	/**
@@ -102,22 +102,4 @@ public class ProductsController {
 		 return Response.ok().entity("Product supprimer avec succés !").build();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
-	
-
 }

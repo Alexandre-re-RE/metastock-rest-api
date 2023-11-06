@@ -68,12 +68,16 @@ public class AccountController {
     }
 
     @PUT
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response edit(Account account) {
+    public Response edit(@PathParam("id") Long id, Account account) {
+        Account target = this.em.find(Account.class, id);
 
-        this.em.merge(account);
+        target.merge(account);
 
-        return Response.ok(account).build();
+        this.em.merge(target);
+
+        return Response.ok(target).build();
     }
 
     @DELETE

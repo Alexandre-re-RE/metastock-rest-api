@@ -11,7 +11,7 @@ import jakarta.persistence.InheritanceType;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "account_type", discriminatorType = DiscriminatorType.STRING)
-public class Account {
+public class Account extends AbstractModel<Account> {
 
     @Id
     @GeneratedValue
@@ -25,7 +25,7 @@ public class Account {
 
     protected String password;
 
-    protected boolean archive;
+    protected Boolean archive;
     
     public Account() {
     }
@@ -70,11 +70,11 @@ public class Account {
         this.password = password;
     }
 
-    public boolean isArchive() {
+    public Boolean isArchive() {
         return archive;
     }
 
-    public void setArchive(boolean archive) {
+    public void setArchive(Boolean archive) {
         this.archive = archive;
     }
 }

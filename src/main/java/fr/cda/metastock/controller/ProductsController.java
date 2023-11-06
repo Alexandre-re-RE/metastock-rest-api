@@ -39,30 +39,50 @@ public class ProductsController {
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getProduits( @QueryParam("filtre") String filtre,
-	        @QueryParam("tri") @DefaultValue("ASC") String tri) {
-		
+	public Response getProduits(@QueryParam("filtre") String filtre,
+	                            @QueryParam("tri") @DefaultValue("ASC") String tri,
+	                            @QueryParam("archive") @DefaultValue("false") boolean archive) {
+
+	    
 	    String queryString = "SELECT p FROM Product p";
 
-	    if (filtre != null && !filtre.trim().isEmpty()) {
-	        queryString += " WHERE LOWER(p.name) LIKE LOWER(:filtre)"; 
+	 
+	    String whereClause = "";
+	    if (archive) {
+	        whereClause = " p.archive = TRUE";
+	    } else {
+	        whereClause = " p.archive = FALSE"; 
 	    }
 
-	    String direction = "ASC".equalsIgnoreCase(tri) ? "ASC" : "DESC";
-	    queryString += " ORDER BY p.name " + direction; 
+	
+	    if (filtre != null && !filtre.trim().isEmpty()) {
+	        whereClause += (whereClause.isEmpty() ? " WHERE" : " AND") + " LOWER(p.name) LIKE LOWER(:filtre)";
+	    }
+
 	    
-	 
+	    if (!whereClause.isEmpty()) {
+	        queryString += " WHERE" + whereClause;
+	    }
+
+	   
+	    String direction = "ASC".equalsIgnoreCase(tri) ? "ASC" : "DESC";
+	    queryString += " ORDER BY p.name " + direction;
+	    
+	    
 	    TypedQuery<Product> requete = em.createQuery(queryString, Product.class);
 	    
+	   
 	    if (filtre != null && !filtre.trim().isEmpty()) {
 	        requete.setParameter("filtre", "%" + filtre.toLowerCase() + "%");
 	    }
 	    
+	
 	    List<Product> listProduit = requete.getResultList();
 
+	   
 	    return Response.ok(listProduit).build();
-		
 	}
+
 	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -102,22 +122,16 @@ public class ProductsController {
 		 return Response.ok().entity("Product supprimer avec succés !").build();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@PUT
+	@Path("/archive/{id}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response archive(@PathParam("id") Long id) {
+		Product existingProduct = em.find(Product.class, id);
+		existingProduct.setArchive(!existingProduct.getArchive());
+		em.merge(existingProduct);
+		return Response.ok(existingProduct).build();
+	}
 	
 
-	
-	
 
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Movement extends AbstractModel{
+public class Movement extends AbstractModel<Movement>{
 	
 	private static final long serialVersionUID = -6369260465693445713L;
 	

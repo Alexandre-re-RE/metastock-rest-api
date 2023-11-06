@@ -1,5 +1,8 @@
 package fr.cda.metastock.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
@@ -7,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -26,6 +31,9 @@ public class Account extends AbstractModel<Account> {
     protected String password;
 
     protected Boolean archive;
+    
+    @OneToMany(mappedBy="account")
+	protected List<Movement> movements = new ArrayList<>();
     
     public Account() {
     }
@@ -77,4 +85,13 @@ public class Account extends AbstractModel<Account> {
     public void setArchive(Boolean archive) {
         this.archive = archive;
     }
+
+	public List<Movement> getMovements() {
+		return movements;
+	}
+
+	public void setMovements(List<Movement> movements) {
+		this.movements = movements;
+	}
+    
 }

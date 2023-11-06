@@ -25,7 +25,6 @@ public class MovementController {
 	@PersistenceContext
 	EntityManager em;
 	
-	
 	@POST()
 	@Path("/")
 	@Produces("application/json")
@@ -75,9 +74,11 @@ public class MovementController {
 	 * @return Response
 	 */
 	public Response update(Movement _movement, @PathParam("id") long id) {
-		Movement _findMovement = this.em.find(Movement.class, id);
-		this.em.merge(_movement);
-		return Response.ok(_movement).build();
+		Movement _toUpdateMovement = this.em.find(Movement.class, id);
+		_toUpdateMovement.merge(_movement);
+		this.em.merge(_toUpdateMovement);
+		
+		return Response.ok(_toUpdateMovement).build();
 	}
 	
 	@DELETE()

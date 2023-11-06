@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 
 
 @Entity
-public class Product implements Serializable{
+public class Product extends AbstractModel<Product> implements Serializable  {
 	
 
 	

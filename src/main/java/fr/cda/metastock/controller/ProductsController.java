@@ -88,21 +88,9 @@ public class ProductsController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response update(Product product,@PathParam("id") Long id) {
 		Product existingProduct = em.find(Product.class, id);
-		Product produitaMettreaJour = new Product(
-				null,
-				product.getName() == null ? existingProduct.getName() : product.getName(),
-				product.getDescription() == null ? existingProduct.getDescription() : product.getDescription(),
-				product.getUnitPrice() ==  0 ? existingProduct.getUnitPrice() : product.getUnitPrice(),	
-				product.getStock() ==  0 ? existingProduct.getStock() : product.getStock(),	
-				product.getThreshold() ==  0 ? existingProduct.getThreshold() : product.getThreshold(),	
-				product.getPicture() ==  null ? existingProduct.getPicture() : product.getPicture(),
-				product.getArchive() ==  null ? existingProduct.getArchive() : product.getArchive()
-				);
-		
-		
-		produitaMettreaJour.setId(id);
-		em.merge(produitaMettreaJour);
-		return Response.ok(produitaMettreaJour).build();
+		existingProduct.merge(product);
+		this.em.merge(existingProduct);
+		return Response.ok(existingProduct).build();
 	}
 	
 	@DELETE

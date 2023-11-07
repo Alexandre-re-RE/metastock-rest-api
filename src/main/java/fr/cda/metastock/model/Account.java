@@ -1,26 +1,19 @@
 package fr.cda.metastock.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "account_type", discriminatorType = DiscriminatorType.STRING)
 public class Account extends AbstractModel<Account> {
 
+    public enum Role {
+        WAREHOUSEMAN, LOGISTICIAN;
+    }
+
     @Id
-    @GeneratedValue
-    protected Long id;
+    protected String id;
 
     protected String firstname;
 
@@ -28,21 +21,27 @@ public class Account extends AbstractModel<Account> {
 
     protected String matricule;
 
-    protected String password;
-
     protected Boolean archive;
-    
-    @OneToMany(mappedBy="account")
-	protected List<Movement> movements = new ArrayList<>();
-    
+
+    @Enumerated(EnumType.STRING)
+    protected Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public Account() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -70,14 +69,6 @@ public class Account extends AbstractModel<Account> {
         this.matricule = matricule;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Boolean isArchive() {
         return archive;
     }
@@ -86,12 +77,16 @@ public class Account extends AbstractModel<Account> {
         this.archive = archive;
     }
 
-	public List<Movement> getMovements() {
-		return movements;
-	}
-
-	public void setMovements(List<Movement> movements) {
-		this.movements = movements;
-	}
-    
+    @Override
+    public String toString() {
+        return String.format(
+            "Account[id=%s, firstname=%s, lastname=%s, matricule=%s, archive=%s, role=%s]",
+            this.id,
+            this.firstname,
+            this.lastname,
+            this.matricule,
+            this.archive,
+            this.role
+        );
+    }
 }

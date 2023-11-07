@@ -12,6 +12,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -35,7 +36,7 @@ public class AccountController {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response show(@PathParam("id") Long id) {
+    public Response show(@PathParam("id") String id) {
 
         TypedQuery<Account> query = this.em.createQuery("SELECT a FROM Account AS a WHERE a.id = :id", Account.class);
         query.setParameter("id", id);
@@ -77,12 +78,14 @@ public class AccountController {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response create(Account account) {
 
         try {
             this.em.persist(account);
             return Response.status(Response.Status.CREATED).entity(account).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -91,7 +94,7 @@ public class AccountController {
     @PUT
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response edit(@PathParam("id") Long id, Account account) {
+    public Response edit(@PathParam("id") String id, Account account) {
         Account target = this.em.find(Account.class, id);
 
         target.merge(account);
@@ -103,7 +106,7 @@ public class AccountController {
 
     @DELETE
     @Path("/{id}")
-    public Response delete(@PathParam("id") Long id) {
+    public Response delete(@PathParam("id") String id) {
 
         TypedQuery<Account> query = this.em.createQuery("SELECT a FROM Account AS a WHERE a.id = :id", Account.class);
         query.setParameter("id", id);
@@ -120,7 +123,7 @@ public class AccountController {
 
     @GET
     @Path("/{id}/archive")
-    public Response archive(@PathParam("id") Long id) {
+    public Response archive(@PathParam("id") String id) {
         TypedQuery<Account> query = this.em.createQuery("SELECT a FROM Account AS a WHERE a.id = :id", Account.class);
         query.setParameter("id", id);
 

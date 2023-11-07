@@ -2,8 +2,6 @@ package fr.cda.metastock.controller;
 
 import java.util.List;
 
-
-
 import fr.cda.metastock.model.Product;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
@@ -96,6 +94,19 @@ public class ProductsController {
 		Product product = em.find(Product.class, id);
 		em.remove(product);
 		 return Response.ok().entity("Product supprimer avec succés !").build();
+	}
+	
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/{id}/movements")
+	/**
+	 * Liste des mouvements de produits
+	 * @param id
+	 * @return Response
+	 */
+	public Response movements(@PathParam("id") Long id) {
+		Product product = this.em.find(Product.class, id);
+		return Response.ok(product.getMovements()).build();
 	}
 	
 }

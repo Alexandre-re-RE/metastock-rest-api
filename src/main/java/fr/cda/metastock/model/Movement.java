@@ -1,8 +1,15 @@
 package fr.cda.metastock.model;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,9 +19,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "movement_type", discriminatorType = DiscriminatorType.STRING)
-public class Movement extends AbstractModel<Movement>{
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Movement extends AbstractModel<Movement>  implements Serializable  {
 	
 	private static final long serialVersionUID = -6369260465693445713L;
 	
@@ -25,24 +31,19 @@ public class Movement extends AbstractModel<Movement>{
 	protected Integer quantity;
 	protected String comment;
 	
-	@ManyToOne
-	@JoinColumn(name = "product_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="product_id", nullable=false)
 	protected Product product;
-	
-	@ManyToOne
-	@JoinColumn(name = "account_id")
-	protected Account account;
 	
 	public Movement() {}
 
-	public Movement(Long id, String date, Integer quantity, String comment, Product product, Account account) {
+	public Movement(Long id, String date, Integer quantity, String comment, Product product) {
 		super();
 		this.id = id;
 		this.date = date;
 		this.quantity = quantity;
 		this.comment = comment;
 		this.product = product;
-		this.account = account;
 	}
 
 	public Long getId() {
@@ -85,17 +86,9 @@ public class Movement extends AbstractModel<Movement>{
 		this.product = product;
 	}
 
-	public Account getAccount() {
-		return account;
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-	}
-
 	@Override
 	public String toString() {
 		return "Movement [id=" + id + ", date=" + date + ", quantity=" + quantity + ", comment=" + comment
-				+ ", product=" + product + ", account=" + account + "]";
+				+ ", product=" + product + "]";
 	}
 }

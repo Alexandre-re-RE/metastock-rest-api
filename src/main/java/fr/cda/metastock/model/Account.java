@@ -1,12 +1,14 @@
 package fr.cda.metastock.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 
 @Entity
-public class Account extends AbstractModel<Account> {
+public class Account extends AbstractModel<Account> implements Serializable {
 
     public enum Role {
         WAREHOUSEMAN, LOGISTICIAN;

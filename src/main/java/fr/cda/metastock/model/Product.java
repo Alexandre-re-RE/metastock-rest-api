@@ -1,19 +1,21 @@
 package fr.cda.metastock.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product extends AbstractModel<Product> implements Serializable  {
 	
 
@@ -22,7 +24,7 @@ public class Product extends AbstractModel<Product> implements Serializable  {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected Long id;
-	
+
 	public Product(Long id, String name, String description, float unitPrice, int stock, int threshold, String picture,
 			Boolean archive, List<Movement> movements) {
 		this.id = id;
@@ -35,7 +37,7 @@ public class Product extends AbstractModel<Product> implements Serializable  {
 		this.archive = archive;
 		this.movements = movements;
 	}
-	
+
 	public Product() {
 		
 	}
@@ -55,8 +57,8 @@ public class Product extends AbstractModel<Product> implements Serializable  {
 	protected String picture;
 	protected Boolean archive;
 	
-	@OneToMany(mappedBy="product")
-	protected List<Movement> movements = new ArrayList<>();
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
+	protected List<Movement> movements;
 	
 
 	public String getName() {
@@ -101,14 +103,20 @@ public class Product extends AbstractModel<Product> implements Serializable  {
 	public void setArchive(Boolean archive) {
 		this.archive = archive;
 	}
+
 	public List<Movement> getMovements() {
 		return movements;
 	}
+
 	public void setMovements(List<Movement> movements) {
 		this.movements = movements;
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", unitPrice=" + unitPrice
+				+ ", stock=" + stock + ", threshold=" + threshold + ", picture=" + picture + ", archive=" + archive
+				+ ", movements=" + movements + "]";
+	}
 
 }

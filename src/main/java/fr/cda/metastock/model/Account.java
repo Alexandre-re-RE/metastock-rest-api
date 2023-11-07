@@ -2,22 +2,20 @@ package fr.cda.metastock.model;
 
 import java.io.Serializable;
 
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "account_type", discriminatorType = DiscriminatorType.STRING)
-public class Account extends AbstractModel<Account>  implements Serializable  {
+public class Account extends AbstractModel<Account> implements Serializable {
+
+    public enum Role {
+        WAREHOUSEMAN, LOGISTICIAN;
+    }
 
     @Id
-    @GeneratedValue
-    protected Long id;
+    protected String id;
 
     protected String firstname;
 
@@ -25,18 +23,27 @@ public class Account extends AbstractModel<Account>  implements Serializable  {
 
     protected String matricule;
 
-    protected String password;
-
     protected Boolean archive;
-    
+
+    @Enumerated(EnumType.STRING)
+    protected Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public Account() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -64,19 +71,24 @@ public class Account extends AbstractModel<Account>  implements Serializable  {
         this.matricule = matricule;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Boolean isArchive() {
         return archive;
     }
 
     public void setArchive(Boolean archive) {
         this.archive = archive;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "Account[id=%s, firstname=%s, lastname=%s, matricule=%s, archive=%s, role=%s]",
+            this.id,
+            this.firstname,
+            this.lastname,
+            this.matricule,
+            this.archive,
+            this.role
+        );
     }
 }

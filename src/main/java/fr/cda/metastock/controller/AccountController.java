@@ -85,7 +85,6 @@ public class AccountController {
             this.em.persist(account);
             return Response.status(Response.Status.CREATED).entity(account).build();
         } catch (Exception e) {
-            e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 

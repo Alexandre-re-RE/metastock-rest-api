@@ -1,0 +1,5 @@
+{
+    "client-id" : "api",
+    "provider-url" : "https://metastock.alexandre.re:8443/realms/metastock",
+    "principal-attribute": "preferred_username"
+}

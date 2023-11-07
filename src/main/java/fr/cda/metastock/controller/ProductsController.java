@@ -68,11 +68,7 @@ public class ProductsController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/{id}")
 	public Response getProduit(@PathParam("id") Long id) {
-		Product product = new Product();
-
-		TypedQuery<Product> request = em.createQuery("select b from Product as b where b.id=:id", Product.class);
-		request.setParameter("id", id);
-		product = request.getSingleResult();
+		Product product = this.em.find(Product.class, id);
 		return Response.ok(product).build();
 	}
 	

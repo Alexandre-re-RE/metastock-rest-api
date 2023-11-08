@@ -3,6 +3,8 @@ package fr.cda.metastock.controller;
 import java.util.List;
 
 import fr.cda.metastock.model.Movement;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,6 +22,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/movements")
 @RequestScoped()
 @Transactional
+@DenyAll
 public class MovementController {
 	
 	@PersistenceContext
@@ -28,6 +31,7 @@ public class MovementController {
 	@POST()
 	@Path("/")
 	@Produces("application/json")
+	@RolesAllowed("warehouseman")
 	/**
 	 * Créer un mouvement.
 	 * @param _movement
@@ -41,6 +45,7 @@ public class MovementController {
 	@GET()
 	@Path("/")
 	@Produces("application/json")
+	@RolesAllowed("logistician")
 	/**
 	 * Liste des mouvements de stock
 	 * @return
@@ -54,6 +59,7 @@ public class MovementController {
 	@GET()
 	@Path("/{id}")
 	@Produces("application/json")
+	@RolesAllowed("logistician")
 	/**
 	 * Vue d'un mouvement
 	 * @param id

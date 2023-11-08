@@ -3,6 +3,8 @@ package fr.cda.metastock.controller;
 import java.util.List;
 
 import fr.cda.metastock.model.Product;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,6 +26,7 @@ import jakarta.ws.rs.core.Response;
 @Transactional
 @RequestScoped
 @Path("/products")
+@DenyAll
 public class ProductsController {
 
 	
@@ -37,6 +40,7 @@ public class ProductsController {
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
+	@RolesAllowed("warehouseman")
 	public Response getProduits( @QueryParam("filtre") String filtre,
 	        @QueryParam("tri") @DefaultValue("ASC") String tri) {
 		
@@ -65,6 +69,7 @@ public class ProductsController {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/{id}")
+	@RolesAllowed("warehouseman")
 	public Response getProduit(@PathParam("id") Long id) {
 		Product product = this.em.find(Product.class, id);
 		return Response.ok(product).build();
@@ -72,6 +77,7 @@ public class ProductsController {
 	
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
+	@RolesAllowed("logistician")
 	public Response create(Product product) {
 		em.persist(product);
 		return Response.status(201).entity(product).build();
@@ -80,6 +86,7 @@ public class ProductsController {
 	@PUT
 	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
+	@RolesAllowed("logistician")
 	public Response update(Product product,@PathParam("id") Long id) {
 		Product existingProduct = em.find(Product.class, id);
 		existingProduct.merge(product);
@@ -99,6 +106,7 @@ public class ProductsController {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/{id}/movements")
+	@RolesAllowed("logistician")
 	/**
 	 * Liste des mouvements de produits
 	 * @param id

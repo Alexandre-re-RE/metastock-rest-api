@@ -2,13 +2,16 @@ package fr.cda.metastock.controller;
 
 import java.util.List;
 
+import fr.cda.metastock.model.Account;
 import fr.cda.metastock.model.Movement;
+import fr.cda.metastock.model.Product;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -17,6 +20,8 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/movements")
@@ -30,75 +35,103 @@ public class MovementController {
 	
 	@POST()
 	@Path("/")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("warehouseman")
 	/**
 	 * Créer un mouvement.
-	 * @param _movement
+	 * @param movement
 	 * @return Response
 	 */
-	public Response create(Movement _movement) {
-		this.em.persist(_movement);
-		return Response.ok(_movement).build();
+	public Response create(Movement movement, @Context HttpServletRequest request) {
+		Account account = (Account) request.getAttribute("user");
+		movement.setAccount(account);
+
+		if(movement.getQuantity() < 0) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Invalid quantity").build();
+		}
+		
+		Product product = this.em.find(Product.class, movement.getProduct().getId());
+
+		if(product == null) {
+			return Response
+			.status(Response.Status.BAD_REQUEST)
+			.entity(String.format("Product '%s' does'nt exists", movement.getProduct().getId()))
+			.build();
+		}
+
+		switch (movement.getType()) {
+			case EXIT:
+				this.em.persist(movement);
+				product.removeStock(movement.getQuantity());
+				this.em.persist(product);
+				break;
+			case ENTRY:
+				this.em.persist(movement);
+				product.addStock(movement.getQuantity());
+				this.em.persist(product);
+				break;
+		}
+
+		return Response.ok(movement).build();
 	}
 	
 	@GET()
 	@Path("/")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("logistician")
 	/**
 	 * Liste des mouvements de stock
-	 * @return
+	 * @return 
 	 */
-	public Response liste() {
-		Query q = this.em.createQuery("select c from Movement c");
-		List<Movement> movements = q.getResultList();
+	public Response index() {
+		TypedQuery<Movement> query = this.em.createQuery("SELECT c FROM Movement c", Movement.class);
+		List<Movement> movements = query.getResultList();
 		return Response.ok(movements).build();
 	}
 	
 	@GET()
 	@Path("/{id}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed("logistician")
 	/**
 	 * Vue d'un mouvement
 	 * @param id
 	 * @return
 	 */
-	public Response view(@PathParam("id") long id) {
-		Movement _movement = this.em.find(Movement.class, id);
-		return Response.ok(_movement).build();
+	public Response view(@PathParam("id") Long id) {
+		Movement movement = this.em.find(Movement.class, id);
+		return Response.ok(movement).build();
 	}
 	
 	@PUT()
 	@Path("/{id}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	/**
 	 * Mise à jour mouvement
-	 * @param _movement
+	 * @param movement
 	 * @param id
 	 * @return Response
 	 */
-	public Response update(Movement _movement, @PathParam("id") long id) {
-		Movement _toUpdateMovement = this.em.find(Movement.class, id);
-		_toUpdateMovement.merge(_movement);
-		this.em.merge(_toUpdateMovement);
-		
-		return Response.ok(_toUpdateMovement).build();
+	public Response update(Movement movement, @PathParam("id") Long id) {
+		Movement target = this.em.find(Movement.class, id);
+		target.merge(movement);
+		this.em.merge(target);
+
+		return Response.ok(target).build();
 	}
 	
 	@DELETE()
 	@Path("/{id}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	/**
 	 * 
 	 * @param id
 	 * @return Response
 	 */
-	public Response delete(@PathParam("id") long id) {
-		Movement _movement = this.em.find(Movement.class, id);
-		this.em.remove(_movement);
-		return Response.ok(_movement).build();
+	public Response delete(@PathParam("id") Long id) {
+		Movement movement = this.em.find(Movement.class, id);
+		this.em.remove(movement);
+		return Response.ok(movement).build();
 	}
 	
 

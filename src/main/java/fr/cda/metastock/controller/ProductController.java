@@ -2,6 +2,7 @@ package fr.cda.metastock.controller;
 
 import java.util.List;
 
+import fr.cda.metastock.model.Movement;
 import fr.cda.metastock.model.Product;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -113,8 +114,15 @@ public class ProductController {
 	 * @return Response
 	 */
 	public Response movements(@PathParam("id") Long id) {
-		Product product = this.em.find(Product.class, id);
-		return Response.ok(product.getMovements()).build();
+		TypedQuery<Movement> query = this.em.createQuery(
+			"SELECT p.movements FROM Product p WHERE p.id = :id", 
+			Movement.class
+		);
+		query.setParameter("id", id);
+
+		List<Movement> movements = query.getResultList();
+		
+		return Response.ok(movements).build();
 	}
 
 	@GET

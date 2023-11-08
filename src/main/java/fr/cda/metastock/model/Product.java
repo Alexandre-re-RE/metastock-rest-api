@@ -3,11 +3,7 @@ package fr.cda.metastock.model;
 import java.io.Serializable;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,10 +11,7 @@ import jakarta.persistence.OneToMany;
 
 
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product extends AbstractModel<Product> implements Serializable  {
-	
-
 	
 	protected static final long serialVersionUID = 1L;
 	@Id
@@ -57,7 +50,7 @@ public class Product extends AbstractModel<Product> implements Serializable  {
 	protected String picture;
 	protected Boolean archive;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
+	@OneToMany(mappedBy = "product")
 	protected List<Movement> movements;
 	
 
@@ -84,6 +77,18 @@ public class Product extends AbstractModel<Product> implements Serializable  {
 	}
 	public void setStock(int stock) {
 		this.stock = stock;
+	}
+	public void addStock(int quantity) {
+		if(quantity < 0) {
+			return;
+		}
+		this.stock += quantity;
+	}
+	public void removeStock(int quantity) {
+		if(quantity < 0) {
+			return;
+		}
+		this.stock -= quantity;
 	}
 	public int getThreshold() {
 		return threshold;

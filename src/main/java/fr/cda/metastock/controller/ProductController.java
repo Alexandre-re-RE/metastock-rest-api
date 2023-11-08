@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.Response;
 @RequestScoped
 @Path("/products")
 @DenyAll
-public class ProductsController {
+public class ProductController {
 
 	
 	@PersistenceContext
@@ -116,5 +116,22 @@ public class ProductsController {
 		Product product = this.em.find(Product.class, id);
 		return Response.ok(product.getMovements()).build();
 	}
+
+	@GET
+    @Path("/{id}/archive")
+    @RolesAllowed("logistician")
+    public Response archive(@PathParam("id") Long id) {
+
+        Product product = this.em.find(Product.class, id);
+
+		if(product == null) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+
+        product.setArchive(true);
+        this.em.persist(product);
+
+        return Response.noContent().build();
+    }
 	
 }

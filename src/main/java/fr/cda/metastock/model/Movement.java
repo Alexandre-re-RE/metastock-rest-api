@@ -2,10 +2,11 @@ package fr.cda.metastock.model;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,8 +15,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Movement extends AbstractModel<Movement>  implements Serializable  {
+public class Movement extends AbstractModel<Movement> implements Serializable {
+
+	public enum Type {
+		ENTRY, EXIT;
+	}
 	
 	private static final long serialVersionUID = -6369260465693445713L;
 	
@@ -25,19 +29,29 @@ public class Movement extends AbstractModel<Movement>  implements Serializable  
 	protected String date;
 	protected Integer quantity;
 	protected String comment;
-	
+
+	@Enumerated(EnumType.STRING)
+	protected Type type;
+
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "account_id", nullable = false)
+	protected Account account;
+	
+	@ManyToOne
 	@JoinColumn(name="product_id", nullable=false)
+	@JsonIgnore
 	protected Product product;
 	
 	public Movement() {}
 
-	public Movement(Long id, String date, Integer quantity, String comment, Product product) {
+	public Movement(Long id, String date, Integer quantity, String comment, Type type, Account account, Product product) {
 		super();
 		this.id = id;
 		this.date = date;
 		this.quantity = quantity;
 		this.comment = comment;
+		this.type = type;
+		this.account = account;
 		this.product = product;
 	}
 
@@ -71,6 +85,22 @@ public class Movement extends AbstractModel<Movement>  implements Serializable  
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 	public Product getProduct() {

@@ -2,6 +2,7 @@ package fr.cda.metastock.controller;
 
 import java.util.List;
 
+import fr.cda.metastock.model.Movement;
 import fr.cda.metastock.model.Product;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,7 +28,7 @@ import jakarta.ws.rs.core.Response;
 @RequestScoped
 @Path("/products")
 @DenyAll
-public class ProductsController {
+public class ProductController {
 
 	
 	@PersistenceContext
@@ -113,8 +114,32 @@ public class ProductsController {
 	 * @return Response
 	 */
 	public Response movements(@PathParam("id") Long id) {
-		Product product = this.em.find(Product.class, id);
-		return Response.ok(product.getMovements()).build();
+		TypedQuery<Movement> query = this.em.createQuery(
+			"SELECT p.movements FROM Product p WHERE p.id = :id", 
+			Movement.class
+		);
+		query.setParameter("id", id);
+
+		List<Movement> movements = query.getResultList();
+		
+		return Response.ok(movements).build();
 	}
+
+	@GET
+    @Path("/{id}/archive")
+    @RolesAllowed("logistician")
+    public Response archive(@PathParam("id") Long id) {
+
+        Product product = this.em.find(Product.class, id);
+
+		if(product == null) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
+
+        product.setArchive(true);
+        this.em.persist(product);
+
+        return Response.noContent().build();
+    }
 	
 }

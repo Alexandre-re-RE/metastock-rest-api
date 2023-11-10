@@ -2,7 +2,8 @@ package fr.cda.metastock.model;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,7 +40,7 @@ public class Movement extends AbstractModel<Movement> implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name="product_id", nullable=false)
-	@JsonIgnore
+	@JsonProperty(access = Access.WRITE_ONLY)
 	protected Product product;
 	
 	public Movement() {}
